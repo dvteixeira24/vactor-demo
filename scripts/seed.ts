@@ -12,8 +12,8 @@ import { actors, clipIdeas, jobs } from "../src/db/seed-data";
 
 const SAMPLE_RATE = 8000;
 const PEAK_BUCKETS = 300;
-const OUT_DIR = "drizzle";
-const AUDIO_DIR = join(OUT_DIR, "seed-audio");
+const OUT_DIR = ".seed";
+const AUDIO_DIR = join(OUT_DIR, "audio");
 
 // Frequencies for the small pool of generated tones.
 const TONE_FREQS = [196, 233, 262, 311, 349, 392, 440, 523];

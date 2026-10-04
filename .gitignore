@@ -51,7 +51,4 @@ next-env.d.ts
 .openchamber/
 
 # generated seed artifacts
-drizzle/seed.sql
-drizzle/seed-audio/
-drizzle/seed-r2.sh
-drizzle/seed-r2-remote.sh
+.seed/

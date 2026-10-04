@@ -14,8 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply vactor-db --local",
     "db:migrate:remote": "wrangler d1 migrations apply vactor-db --remote",
-    "db:seed": "tsx scripts/seed.ts && bash drizzle/seed-r2.sh && wrangler d1 execute vactor-db --local --file=./drizzle/seed.sql",
-    "db:seed:remote": "tsx scripts/seed.ts && bash drizzle/seed-r2-remote.sh && wrangler d1 execute vactor-db --remote --file=./drizzle/seed.sql",
+    "db:seed": "tsx scripts/seed.ts && bash .seed/seed-r2.sh && wrangler d1 execute vactor-db --local --file=./.seed/seed.sql",
+    "db:seed:remote": "tsx scripts/seed.ts && bash .seed/seed-r2-remote.sh && wrangler d1 execute vactor-db --remote --file=./.seed/seed.sql",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
