@@ -15,7 +15,7 @@
     {
       "binding": "DB",
       "database_name": "vactor-db",
-      "database_id": "PLACEHOLDER_REPLACE_AT_DEPLOY",
+      "database_id": "d5780d6e-d2d2-4e96-9cb2-e525dbd58138",
       "migrations_dir": "drizzle"
     }
   ],
@@ -23,12 +23,6 @@
     {
       "binding": "AUDIO",
       "bucket_name": "vactor-audio"
-    }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "PLACEHOLDER_REPLACE_AT_DEPLOY"
     }
   ],
   "vars": {
