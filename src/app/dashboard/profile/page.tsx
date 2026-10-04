@@ -1,6 +1,8 @@
 import { getOrCreateProfile } from "@/app/actions/profile";
 import { requireUser } from "@/lib/session";
+import { mediaUrl } from "@/lib/media";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { ImageUpload } from "@/components/profile/ImageUpload";
 
 export const metadata = { title: "Profile" };
 
@@ -18,6 +20,22 @@ export default async function ProfileSettingsPage() {
           This is what casting directors and clients will see.
         </p>
       </header>
+
+      <section className="flex flex-col gap-5 rounded-card border border-line bg-surface p-5">
+        <h2 className="font-display text-lg font-semibold tracking-tight">
+          Images
+        </h2>
+        <ImageUpload
+          kind="avatar"
+          name={profile.displayName}
+          currentUrl={mediaUrl(profile.avatarKey)}
+        />
+        <ImageUpload
+          kind="cover"
+          name={profile.displayName}
+          currentUrl={mediaUrl(profile.coverKey)}
+        />
+      </section>
 
       <ProfileForm profile={profile} />
     </div>
