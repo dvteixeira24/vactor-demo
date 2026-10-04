@@ -1,0 +1,38 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vactor",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "vactor-db",
+      "database_id": "PLACEHOLDER_REPLACE_AT_DEPLOY",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "AUDIO",
+      "bucket_name": "vactor-audio",
+      "preview_bucket_name": "vactor-audio-dev"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "PLACEHOLDER_REPLACE_AT_DEPLOY"
+    }
+  ],
+  "vars": {
+    "BETTER_AUTH_URL": "http://localhost:3000"
+  }
+}
