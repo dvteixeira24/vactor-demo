@@ -17,12 +17,15 @@ export function GlobalPlayer() {
     next,
     prev,
     close,
+    queue,
   } = usePlayer();
 
   if (!track) return null;
 
   const total = duration || track.durationSec || 0;
   const progress = total > 0 ? currentTime / total : 0;
+  const atStart = queue.length === 0 || queue[0]?.id === track.id;
+  const atEnd = queue.length === 0 || queue[queue.length - 1]?.id === track.id;
 
   return (
     <>
@@ -37,8 +40,9 @@ export function GlobalPlayer() {
             <button
               type="button"
               onClick={prev}
+              disabled={atStart}
               aria-label="Previous clip"
-              className="grid size-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-paper hover:text-ink"
+              className="grid size-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-paper hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent"
             >
               <SkipBack className="size-4" aria-hidden />
             </button>
@@ -57,8 +61,9 @@ export function GlobalPlayer() {
             <button
               type="button"
               onClick={next}
+              disabled={atEnd}
               aria-label="Next clip"
-              className="grid size-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-paper hover:text-ink"
+              className="grid size-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-paper hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent"
             >
               <SkipForward className="size-4" aria-hidden />
             </button>

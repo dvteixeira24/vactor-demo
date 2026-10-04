@@ -24,7 +24,7 @@ export function Hero({ query }: { query?: string }) {
           <input
             name="q"
             defaultValue={query}
-            placeholder="Search clips, actors, or styles"
+            placeholder="Search clips and actors"
             aria-label="Search clips and actors"
             className="h-10 flex-1 bg-transparent text-ink outline-none placeholder:text-faint"
           />

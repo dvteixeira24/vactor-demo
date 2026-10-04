@@ -130,10 +130,6 @@ export const profiles = sqliteTable(
       .notNull()
       .default(sql`'[]'`),
     websiteUrl: text("website_url"),
-    socials: text("socials", { mode: "json" })
-      .$type<Record<string, string>>()
-      .notNull()
-      .default(sql`'{}'`),
     yearsExperience: integer("years_experience"),
     isPublished: integer("is_published", { mode: "boolean" })
       .notNull()
@@ -243,7 +239,7 @@ export const offers = sqliteTable(
     currency: text("currency").notNull().default("USD"),
     message: text("message"),
     status: text("status", {
-      enum: ["submitted", "shortlisted", "declined", "accepted"],
+      enum: ["submitted"],
     })
       .notNull()
       .default("submitted"),
@@ -259,23 +255,6 @@ export const offers = sqliteTable(
     uniqueIndex("offers_job_user_unique").on(t.jobId, t.userId),
     index("offers_user_id_idx").on(t.userId),
   ],
-);
-
-export const clipLikes = sqliteTable(
-  "clip_likes",
-  {
-    id: text("id").primaryKey(),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    clipId: text("clip_id")
-      .notNull()
-      .references(() => demoClips.id, { onDelete: "cascade" }),
-    createdAt: integer("created_at", { mode: "timestamp_ms" })
-      .default(epochMs)
-      .notNull(),
-  },
-  (t) => [uniqueIndex("clip_likes_user_clip_unique").on(t.userId, t.clipId)],
 );
 
 /* -------------------------------------------------------------------------- */
@@ -302,12 +281,11 @@ export const profileRelations = relations(profiles, ({ one, many }) => ({
   clips: many(demoClips),
 }));
 
-export const demoClipRelations = relations(demoClips, ({ one, many }) => ({
+export const demoClipRelations = relations(demoClips, ({ one }) => ({
   profile: one(profiles, {
     fields: [demoClips.profileId],
     references: [profiles.id],
   }),
-  likes: many(clipLikes),
 }));
 
 export const jobRelations = relations(jobs, ({ many }) => ({
@@ -317,14 +295,6 @@ export const jobRelations = relations(jobs, ({ many }) => ({
 export const offerRelations = relations(offers, ({ one }) => ({
   job: one(jobs, { fields: [offers.jobId], references: [jobs.id] }),
   user: one(user, { fields: [offers.userId], references: [user.id] }),
-}));
-
-export const clipLikeRelations = relations(clipLikes, ({ one }) => ({
-  user: one(user, { fields: [clipLikes.userId], references: [user.id] }),
-  clip: one(demoClips, {
-    fields: [clipLikes.clipId],
-    references: [demoClips.id],
-  }),
 }));
 
 /* -------------------------------------------------------------------------- */
@@ -340,4 +310,3 @@ export type Job = typeof jobs.$inferSelect;
 export type NewJob = typeof jobs.$inferInsert;
 export type Offer = typeof offers.$inferSelect;
 export type NewOffer = typeof offers.$inferInsert;
-export type ClipLike = typeof clipLikes.$inferSelect;

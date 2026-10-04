@@ -22,9 +22,6 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
     profile?.languages ?? [],
   );
   const [voiceTags, setVoiceTags] = useState<string[]>(profile?.voiceTags ?? []);
-  const [socials, setSocials] = useState<Record<string, string>>(
-    profile?.socials ?? {},
-  );
   const [isPublished, setIsPublished] = useState(profile?.isPublished ?? false);
   const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(
     null,
@@ -45,7 +42,6 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
         yearsExperience: years === "" ? undefined : years,
         languages,
         voiceTags,
-        socials,
         isPublished,
       });
       setStatus(
@@ -135,22 +131,6 @@ export function ProfileForm({ profile }: { profile: Profile | null }) {
           onChange={(e) => setWebsiteUrl(e.target.value)}
           placeholder="https://yourname.com"
         />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <TextField
-            label="Instagram"
-            value={socials.instagram ?? ""}
-            onChange={(e) =>
-              setSocials({ ...socials, instagram: e.target.value })
-            }
-            placeholder="@handle"
-          />
-          <TextField
-            label="YouTube"
-            value={socials.youtube ?? ""}
-            onChange={(e) => setSocials({ ...socials, youtube: e.target.value })}
-            placeholder="https://youtube.com/@you"
-          />
-        </div>
       </Section>
 
       <div className="flex flex-col gap-4 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">

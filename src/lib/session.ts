@@ -30,9 +30,3 @@ export async function requireUser(callbackUrl = "/dashboard"): Promise<SessionUs
   }
   return session.user;
 }
-
-/** Non-redirecting variant for pages that render a signed-out state. */
-export async function getUser(): Promise<SessionUser | null> {
-  const session = await getSession();
-  return session?.user ?? null;
-}

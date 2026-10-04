@@ -17,6 +17,20 @@ portfolio piece — light, editorial, casting-directory aesthetic.
 - Responsive, accessible (skip link, keyboard-operable player, ARIA), with
   loading skeletons, empty states, error boundary, and a real 404.
 
+## Deliberately out of scope
+
+Every control in the UI works end to end — there are no dead buttons or fake
+metrics. These features are intentionally **absent** rather than stubbed:
+
+- **Likes / favourites** — play counts are the only engagement metric; there is
+  no like button and no likes data.
+- **Social links** — a profile links to a single website; there are no
+  Instagram/YouTube fields.
+- **Offer status workflow** — an offer is always `Submitted`; there is no
+  shortlist / accept / decline flow.
+- **Payments, messaging, client accounts** — jobs are seeded and read-only on
+  the client side; there is no in-app chat or checkout.
+
 ## Stack
 
 | Concern | Choice |

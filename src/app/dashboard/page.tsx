@@ -12,10 +12,15 @@ export default async function DashboardPage() {
   const stats = await getDashboardStats(db, user.id, profile?.id ?? null);
 
   const cards = [
-    { label: "Demo clips", value: stats.clipCount, href: "/dashboard/clips" },
-    { label: "Total plays", value: stats.totalPlays, href: "/dashboard/clips" },
-    { label: "Offers sent", value: stats.offerCount, href: "/dashboard/offers" },
-    { label: "Likes", value: stats.likeCount, href: "/dashboard/clips" },
+    { label: "Demo clips", value: String(stats.clipCount), href: "/dashboard/clips", numeric: true },
+    { label: "Total plays", value: String(stats.totalPlays), href: "/dashboard/clips", numeric: true },
+    { label: "Offers sent", value: String(stats.offerCount), href: "/dashboard/offers", numeric: true },
+    {
+      label: "Profile",
+      value: profile?.isPublished ? "Published" : "Draft",
+      href: "/dashboard/profile",
+      numeric: false,
+    },
   ];
 
   return (
@@ -56,7 +61,13 @@ export default async function DashboardPage() {
             className="rounded-card border border-line bg-surface p-5 transition-shadow hover:shadow-card"
           >
             <p className="text-sm text-muted">{card.label}</p>
-            <p className="mt-1 font-display text-3xl font-semibold tabular-nums">
+            <p
+              className={
+                card.numeric
+                  ? "mt-1 font-display text-3xl font-semibold tabular-nums"
+                  : "mt-1 font-display text-xl font-semibold tracking-tight"
+              }
+            >
               {card.value}
             </p>
           </Link>

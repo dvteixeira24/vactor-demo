@@ -17,7 +17,6 @@ export const profileSchema = z.object({
   yearsExperience: z.coerce.number().int().min(0).max(80).optional(),
   languages: z.array(z.string()).max(10).default([]),
   voiceTags: z.array(z.string()).max(10).default([]),
-  socials: z.record(z.string(), z.string()).default({}),
   isPublished: z.coerce.boolean().default(false),
 });
 

@@ -2,6 +2,13 @@
 
 **Date:** 2026-10-04
 **Status:** Approved (decisions delegated to implementer)
+
+**Revision (post-build):** To keep the UI honest, three planned-but-unwired
+features were cut from the implementation: the `clip_like` table + likes action,
+profile `socials` (Instagram/YouTube), and offer status transitions beyond
+`submitted`. The profile `languages` field (already functional via the
+directory filter) was surfaced on the public profile instead of being cut. See
+"Deliberately out of scope" in the README. Everything else shipped as specified.
 **Purpose:** A portfolio/demo web app: a modern voice-acting marketplace with two pillars — (1) voice-actor profiles + demo clips, and (2) a job board with voice-acting offers.
 
 ## 1. Goals & non-goals
@@ -17,6 +24,9 @@
 - Real payments / escrow / contracts.
 - In-app messaging or chat threads.
 - Client/employer accounts — jobs are seeded only.
+- Likes / favourites — removed; play counts are the only engagement metric.
+- Social links beyond a single website URL.
+- Offer status transitions (shortlist / accept / decline) — offers are always `submitted`.
 - Server-side audio transcoding (no ffmpeg); we accept common web formats as-is.
 - Notifications, email delivery, moderation tooling.
 

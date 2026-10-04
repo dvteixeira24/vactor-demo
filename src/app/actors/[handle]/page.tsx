@@ -98,10 +98,15 @@ export default async function ActorProfilePage({
               )}
             </div>
 
-            {actor.voiceTags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+            {(actor.voiceTags.length > 0 || actor.languages.length > 0) && (
+              <div className="flex flex-wrap items-center gap-2">
                 {actor.voiceTags.map((tag) => (
                   <Badge key={tag}>{tag}</Badge>
+                ))}
+                {actor.languages.map((language) => (
+                  <Badge key={language} tone="accent">
+                    {language}
+                  </Badge>
                 ))}
               </div>
             )}

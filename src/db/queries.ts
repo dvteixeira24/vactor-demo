@@ -1,7 +1,6 @@
 import { and, desc, eq, getTableColumns, inArray, like, or, sql } from "drizzle-orm";
 import type { Db } from "./index";
 import {
-  clipLikes,
   demoClips,
   jobs,
   offers,
@@ -68,20 +67,6 @@ export async function listLatestClips(
     .orderBy(desc(demoClips.createdAt))
     .limit(limit);
   return rows;
-}
-
-/** Most-played published clips. */
-export async function listFeaturedClips(
-  db: Db,
-  limit = 6,
-): Promise<ClipWithActor[]> {
-  return db
-    .select({ clip: demoClips, actor: actorColumns })
-    .from(demoClips)
-    .innerJoin(profiles, eq(demoClips.profileId, profiles.id))
-    .where(and(eq(profiles.isPublished, true), eq(demoClips.status, "ready")))
-    .orderBy(desc(demoClips.playCount), desc(demoClips.createdAt))
-    .limit(limit);
 }
 
 export async function getClipWithActor(
@@ -249,26 +234,10 @@ export async function listOffersByUser(
     .orderBy(desc(offers.createdAt));
 }
 
-export type OfferWithActor = {
-  offer: Offer;
-  actor: ActorSummary | null;
-  user: { name: string; email: string } | null;
-};
-
-/** Offers submitted to a job (used on the job detail page). */
-export async function listOffersForJob(db: Db, jobId: string): Promise<Offer[]> {
-  return db
-    .select()
-    .from(offers)
-    .where(eq(offers.jobId, jobId))
-    .orderBy(desc(offers.createdAt));
-}
-
 export type DashboardStats = {
   clipCount: number;
   totalPlays: number;
   offerCount: number;
-  likeCount: number;
 };
 
 export async function getDashboardStats(
@@ -291,19 +260,10 @@ export async function getDashboardStats(
     .from(offers)
     .where(eq(offers.userId, userId));
 
-  const [likeRow] = profileId
-    ? await db
-        .select({ likeCount: sql<number>`count(*)` })
-        .from(clipLikes)
-        .innerJoin(demoClips, eq(clipLikes.clipId, demoClips.id))
-        .where(eq(demoClips.profileId, profileId))
-    : [{ likeCount: 0 }];
-
   return {
     clipCount: Number(clipRow?.clipCount ?? 0),
     totalPlays: Number(clipRow?.totalPlays ?? 0),
     offerCount: Number(offerRow?.offerCount ?? 0),
-    likeCount: Number(likeRow?.likeCount ?? 0),
   };
 }
 

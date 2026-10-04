@@ -4,16 +4,9 @@ import { listOffersByUser } from "@/db/queries";
 import { requireUser } from "@/lib/session";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { formatRateType, type OfferStatus } from "@/lib/taxonomy";
+import { formatRateType } from "@/lib/taxonomy";
 
 export const metadata = { title: "Offers" };
-
-const tone: Record<OfferStatus, "neutral" | "accent" | "success" | "danger"> = {
-  submitted: "neutral",
-  shortlisted: "accent",
-  accepted: "success",
-  declined: "danger",
-};
 
 export default async function OffersPage() {
   const user = await requireUser("/dashboard/offers");
@@ -66,7 +59,7 @@ export default async function OffersPage() {
                   {job ? ` · ${job.clientName}` : ""}
                 </p>
               </div>
-              <Badge tone={tone[offer.status]}>{offer.status}</Badge>
+              <Badge>Submitted</Badge>
             </li>
           ))}
         </ul>

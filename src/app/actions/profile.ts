@@ -39,7 +39,6 @@ export async function updateProfile(input: unknown): Promise<ActionResult> {
       yearsExperience: data.yearsExperience ?? null,
       languages: data.languages,
       voiceTags: data.voiceTags,
-      socials: data.socials,
       isPublished: data.isPublished,
     })
     .where(eq(profiles.id, profile.id));

@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { clipLikes, demoClips, profiles } from "@/db/schema";
+import { demoClips, profiles } from "@/db/schema";
 import { requireUser } from "@/lib/session";
 import { isOwner } from "@/lib/authz";
 import { deleteObject } from "@/lib/storage";
@@ -41,27 +41,4 @@ export async function deleteClip(clipId: string): Promise<ActionResult> {
   revalidatePath("/");
   revalidatePath(`/actors/${row.handle}`);
   return { ok: true, message: "Clip deleted." };
-}
-
-export async function toggleLike(
-  clipId: string,
-): Promise<{ ok: true; liked: boolean } | { ok: false; error: string }> {
-  const user = await requireUser();
-  const db = await getDb();
-
-  const existing = await db
-    .select()
-    .from(clipLikes)
-    .where(and(eq(clipLikes.userId, user.id), eq(clipLikes.clipId, clipId)))
-    .limit(1);
-
-  if (existing[0]) {
-    await db.delete(clipLikes).where(eq(clipLikes.id, existing[0].id));
-    return { ok: true, liked: false };
-  }
-
-  await db
-    .insert(clipLikes)
-    .values({ id: crypto.randomUUID(), userId: user.id, clipId });
-  return { ok: true, liked: true };
 }

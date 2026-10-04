@@ -44,12 +44,7 @@ export const LANGUAGES = [
 
 export const RATE_TYPES = ["fixed", "hourly", "per_word"] as const;
 export const LOCATION_TYPES = ["remote", "onsite"] as const;
-export const OFFER_STATUSES = [
-  "submitted",
-  "shortlisted",
-  "declined",
-  "accepted",
-] as const;
+export const OFFER_STATUSES = ["submitted"] as const;
 
 export type Category = (typeof CATEGORIES)[number];
 export type VoiceTag = (typeof VOICE_TAGS)[number];
