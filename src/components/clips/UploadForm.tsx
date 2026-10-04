@@ -92,7 +92,6 @@ export function UploadForm() {
       setError(
         "Couldn't read that audio file. Try a different format (MP3 or WAV).",
       );
-      setFile(null);
     } finally {
       setPhase("idle");
     }
@@ -180,6 +179,7 @@ export function UploadForm() {
           className="hidden"
           onChange={(e) => {
             const selected = e.target.files?.[0];
+            e.target.value = "";
             if (selected) void onFile(selected);
           }}
         />

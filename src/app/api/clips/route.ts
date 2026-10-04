@@ -5,6 +5,7 @@ import { demoClips, profiles } from "@/db/schema";
 import { getSession } from "@/lib/session";
 import { clipSchema } from "@/lib/validators/clip";
 import {
+  MAX_AUDIO_BYTES,
   audioExtFromMime,
   clipAudioKey,
   putObject,
@@ -24,6 +25,15 @@ export async function POST(request: Request) {
   const session = await getSession();
   if (!session) {
     return Response.json({ error: "You must be signed in." }, { status: 401 });
+  }
+
+  // Reject oversized uploads before buffering the multipart body.
+  const contentLength = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(contentLength) && contentLength > MAX_AUDIO_BYTES + 64 * 1024) {
+    return Response.json(
+      { error: "Clip must be 25 MB or smaller" },
+      { status: 413 },
+    );
   }
 
   const form = await request.formData();

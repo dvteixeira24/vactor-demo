@@ -54,7 +54,11 @@ export async function submitOffer(input: unknown): Promise<OfferResult> {
   } else {
     await db
       .insert(offers)
-      .values({ id: crypto.randomUUID(), jobId: job.id, userId: user.id, ...values });
+      .values({ id: crypto.randomUUID(), jobId: job.id, userId: user.id, ...values })
+      .onConflictDoUpdate({
+        target: [offers.jobId, offers.userId],
+        set: values,
+      });
   }
 
   revalidatePath(`/jobs/${job.id}`);

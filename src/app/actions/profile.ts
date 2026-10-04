@@ -3,51 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { profiles, type Profile } from "@/db/schema";
+import { profiles } from "@/db/schema";
 import { requireUser } from "@/lib/session";
+import { getOrCreateProfile } from "@/lib/profiles";
 import { profileSchema } from "@/lib/validators/profile";
-import { slugifyHandle, uniqueHandle } from "@/lib/handles";
 
 export type ActionResult =
   | { ok: true; message?: string }
   | { ok: false; error: string };
-
-/** Loads the signed-in user's profile, creating a minimal one if absent. */
-export async function getOrCreateProfile(
-  userId: string,
-  displayName: string,
-): Promise<Profile> {
-  const db = await getDb();
-  const existing = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.userId, userId))
-    .limit(1);
-  if (existing[0]) return existing[0];
-
-  const taken = new Set(
-    (await db.select({ handle: profiles.handle }).from(profiles)).map(
-      (r) => r.handle,
-    ),
-  );
-  const handle = uniqueHandle(slugifyHandle(displayName), taken);
-  const id = crypto.randomUUID();
-
-  await db.insert(profiles).values({
-    id,
-    userId,
-    handle,
-    displayName,
-    isPublished: false,
-  });
-
-  const created = await db
-    .select()
-    .from(profiles)
-    .where(eq(profiles.id, id))
-    .limit(1);
-  return created[0];
-}
 
 /** Updates the signed-in user's profile after validation. */
 export async function updateProfile(input: unknown): Promise<ActionResult> {
@@ -88,12 +51,24 @@ export async function updateProfile(input: unknown): Promise<ActionResult> {
   return { ok: true, message: "Profile saved." };
 }
 
-/** Sets (or clears) the avatar or cover image key for the signed-in user. */
+/**
+ * Sets (or clears) the avatar or cover image key for the signed-in user.
+ * The key must belong to the user (uploaded by them) — a caller cannot point
+ * at another user's object.
+ */
 export async function setProfileImage(
   kind: "avatar" | "cover",
   key: string | null,
 ): Promise<ActionResult> {
   const user = await requireUser("/dashboard/profile");
+
+  if (key !== null) {
+    const prefix = kind === "avatar" ? `avatars/${user.id}/` : `covers/${user.id}/`;
+    if (!key.startsWith(prefix) || key.length <= prefix.length) {
+      return { ok: false, error: "Invalid image key." };
+    }
+  }
+
   const db = await getDb();
   const profile = await getOrCreateProfile(user.id, user.name);
 

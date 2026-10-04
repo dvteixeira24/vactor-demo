@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getDb } from "@/db";
 import { getProfileByUserId, listClipsForProfile } from "@/db/queries";
 import { requireUser } from "@/lib/session";
-import { getOrCreateProfile } from "@/app/actions/profile";
+import { getOrCreateProfile } from "@/lib/profiles";
 import { ManageClipRow } from "@/components/clips/ManageClipRow";
 import { EmptyState } from "@/components/ui/EmptyState";
 

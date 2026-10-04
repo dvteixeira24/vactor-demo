@@ -1,4 +1,4 @@
-import { getOrCreateProfile } from "@/app/actions/profile";
+import { getOrCreateProfile } from "@/lib/profiles";
 import { requireUser } from "@/lib/session";
 import { mediaUrl } from "@/lib/media";
 import { ProfileForm } from "@/components/profile/ProfileForm";

@@ -31,8 +31,10 @@ export async function deleteClip(clipId: string): Promise<ActionResult> {
     return { ok: false, error: "You can only delete your own clips." };
   }
 
-  await deleteObject(row.clip.audioKey).catch(() => undefined);
+  // Delete the row first: an orphaned R2 object is preferable to a clip row
+  // whose audio has been removed.
   await db.delete(demoClips).where(eq(demoClips.id, clipId));
+  await deleteObject(row.clip.audioKey).catch(() => undefined);
 
   revalidatePath("/dashboard/clips");
   revalidatePath("/dashboard");

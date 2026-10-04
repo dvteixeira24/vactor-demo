@@ -43,7 +43,10 @@ export async function listLatestClips(
   db: Db,
   { limit = 24, category, search, actorHandle }: ClipFilters = {},
 ): Promise<ClipWithActor[]> {
-  const conditions = [eq(profiles.isPublished, true)];
+  const conditions = [
+    eq(profiles.isPublished, true),
+    eq(demoClips.status, "ready"),
+  ];
   if (category) conditions.push(eq(demoClips.category, category));
   if (actorHandle) conditions.push(eq(profiles.handle, actorHandle));
   if (search) {
@@ -76,7 +79,7 @@ export async function listFeaturedClips(
     .select({ clip: demoClips, actor: actorColumns })
     .from(demoClips)
     .innerJoin(profiles, eq(demoClips.profileId, profiles.id))
-    .where(eq(profiles.isPublished, true))
+    .where(and(eq(profiles.isPublished, true), eq(demoClips.status, "ready")))
     .orderBy(desc(demoClips.playCount), desc(demoClips.createdAt))
     .limit(limit);
 }
