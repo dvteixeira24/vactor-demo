@@ -137,7 +137,10 @@ export default async function ActorProfilePage({
                 }
               />
             ) : (
-              <ClipList clips={clips} />
+              <ClipList
+                clips={clips}
+                actor={{ displayName: actor.displayName, handle: actor.handle }}
+              />
             )}
           </section>
         </div>
