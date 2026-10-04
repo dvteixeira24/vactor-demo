@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getDb } from "@/db";
-import { listActors } from "@/db/queries";
+import { listActors, type ActorFilters } from "@/db/queries";
 import { ActorCard } from "@/components/profile/ActorCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { CATEGORIES, LANGUAGES, VOICE_TAGS } from "@/lib/taxonomy";
 
 export const metadata: Metadata = { title: "Actors" };
@@ -18,15 +20,12 @@ export default async function ActorsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const filters = {
+  const filters: ActorFilters = {
     search: one(sp.q),
     category: one(sp.category),
     language: one(sp.language),
     tag: one(sp.tag),
   };
-
-  const db = await getDb();
-  const actors = await listActors(db, filters);
 
   return (
     <div className="container-page py-12">
@@ -63,18 +62,31 @@ export default async function ActorsPage({
         </button>
       </form>
 
-      {actors.length === 0 ? (
-        <EmptyState
-          title="No actors match those filters"
-          description="Try widening your search, or clear the filters to see everyone."
-        />
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {actors.map((actor) => (
-            <ActorCard key={actor.id} actor={actor} />
-          ))}
-        </div>
-      )}
+      <Suspense fallback={<SkeletonGrid itemClassName="h-52" />}>
+        <ActorsResults filters={filters} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function ActorsResults({ filters }: { filters: ActorFilters }) {
+  const db = await getDb();
+  const actors = await listActors(db, filters);
+
+  if (actors.length === 0) {
+    return (
+      <EmptyState
+        title="No actors match those filters"
+        description="Try widening your search, or clear the filters to see everyone."
+      />
+    );
+  }
+
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {actors.map((actor) => (
+        <ActorCard key={actor.id} actor={actor} />
+      ))}
     </div>
   );
 }

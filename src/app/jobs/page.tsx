@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getDb } from "@/db";
-import { listJobs } from "@/db/queries";
+import { listJobs, type JobFilters } from "@/db/queries";
 import { JobCard } from "@/components/jobs/JobCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SkeletonGrid } from "@/components/ui/Skeleton";
 import { CATEGORIES } from "@/lib/taxonomy";
 
 export const metadata: Metadata = { title: "Jobs" };
@@ -18,14 +20,11 @@ export default async function JobsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const filters = {
+  const filters: JobFilters = {
     search: one(sp.q),
     category: one(sp.category),
     locationType: one(sp.location),
   };
-
-  const db = await getDb();
-  const jobs = await listJobs(db, filters);
 
   return (
     <div className="container-page py-12">
@@ -87,18 +86,31 @@ export default async function JobsPage({
         </button>
       </form>
 
-      {jobs.length === 0 ? (
-        <EmptyState
-          title="No jobs match those filters"
-          description="Try clearing the filters to see everything that's open."
-        />
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
-      )}
+      <Suspense fallback={<SkeletonGrid itemClassName="h-44" />}>
+        <JobsResults filters={filters} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function JobsResults({ filters }: { filters: JobFilters }) {
+  const db = await getDb();
+  const jobs = await listJobs(db, filters);
+
+  if (jobs.length === 0) {
+    return (
+      <EmptyState
+        title="No jobs match those filters"
+        description="Try clearing the filters to see everything that's open."
+      />
+    );
+  }
+
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {jobs.map((job) => (
+        <JobCard key={job.id} job={job} />
+      ))}
     </div>
   );
 }
