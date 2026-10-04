@@ -1,69 +1,112 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { getDb } from "@/db";
+import { listJobs, listLatestClips } from "@/db/queries";
+import { Hero } from "@/components/home/Hero";
+import { CategoryChips } from "@/components/layout/CategoryChips";
+import { ClipFeed } from "@/components/clips/ClipFeed";
+import { JobCard } from "@/components/jobs/JobCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Vactor — voice talent, on display",
+};
+
+function one(value: string | string[] | undefined): string | undefined {
+  if (typeof value === "string" && value.trim()) return value.trim();
+  return undefined;
+}
+
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const category = one(sp.category);
+  const query = one(sp.q);
+
+  const db = await getDb();
+  const [clips, jobs] = await Promise.all([
+    listLatestClips(db, { category, search: query, limit: 24 }),
+    listJobs(db, { limit: 3 }),
+  ]);
+
+  const items = clips.map(({ clip, actor }) => ({ clip, actor }));
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      <Hero query={query} />
+
+      <div className="container-page py-10">
+        <div className="mb-6">
+          <CategoryChips active={category} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
+          <section className="min-w-0">
+            <div className="mb-4 flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                {query
+                  ? `Results for “${query}”`
+                  : category
+                    ? `${category} demos`
+                    : "Latest demos"}
+              </h2>
+              <Link
+                href="/actors"
+                className="whitespace-nowrap text-sm font-medium text-accent hover:text-accent-hover"
+              >
+                Browse actors →
+              </Link>
+            </div>
+
+            {items.length === 0 ? (
+              <EmptyState
+                title="No clips to show yet"
+                description={
+                  query
+                    ? "Nothing matched that search. Try another term."
+                    : "Once actors upload demo clips, they'll appear here."
+                }
+                action={
+                  <Link
+                    href="/signup"
+                    className="rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-ink-soft"
+                  >
+                    Add your voice
+                  </Link>
+                }
+              />
+            ) : (
+              <ClipFeed items={items} />
+            )}
+          </section>
+
+          <aside className="min-w-0">
+            <div className="mb-4 flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                Hiring now
+              </h2>
+              <Link
+                href="/jobs"
+                className="whitespace-nowrap text-sm font-medium text-accent hover:text-accent-hover"
+              >
+                All jobs →
+              </Link>
+            </div>
+            <div className="flex flex-col gap-3">
+              {jobs.length === 0 ? (
+                <p className="rounded-card border border-dashed border-line-strong p-6 text-center text-sm text-muted">
+                  No open roles right now.
+                </p>
+              ) : (
+                jobs.map((job) => <JobCard key={job.id} job={job} />)
+              )}
+            </div>
+          </aside>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
