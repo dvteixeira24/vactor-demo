@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { AudioLines } from "lucide-react";
+import { getSession } from "@/lib/session";
+import { SignOutButton } from "@/components/auth/SignOutButton";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const session = await getSession();
+
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-6">
@@ -29,18 +33,32 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link
-            href="/login"
-            className="rounded-full px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:text-ink"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-ink-soft"
-          >
-            Get started
-          </Link>
+          {session ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="rounded-full px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-surface hover:text-ink"
+              >
+                Dashboard
+              </Link>
+              <SignOutButton />
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-full px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-ink-soft"
+              >
+                Get started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
