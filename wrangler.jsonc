@@ -22,8 +22,7 @@
   "r2_buckets": [
     {
       "binding": "AUDIO",
-      "bucket_name": "vactor-audio",
-      "preview_bucket_name": "vactor-audio-dev"
+      "bucket_name": "vactor-audio"
     }
   ],
   "kv_namespaces": [

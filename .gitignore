@@ -49,3 +49,9 @@ next-env.d.ts
 
 # browser screenshots
 .openchamber/
+
+# generated seed artifacts
+drizzle/seed.sql
+drizzle/seed-audio/
+drizzle/seed-r2.sh
+drizzle/seed-r2-remote.sh
